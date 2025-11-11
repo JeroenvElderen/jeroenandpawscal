@@ -1,0 +1,6 @@
+{
+  "buildCommand": "yarn turbo run build --filter=@calcom/web...",
+  "installCommand": "yarn install --frozen-lockfile",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs"
+}
