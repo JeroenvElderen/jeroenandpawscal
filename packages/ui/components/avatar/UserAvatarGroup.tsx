@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 
 import { getBookerBaseUrlSync } from "@calcom/features/ee/organizations/lib/getBookerBaseUrlSync";
