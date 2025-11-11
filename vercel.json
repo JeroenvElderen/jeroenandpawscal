@@ -1,6 +1,6 @@
 {
   "installCommand": "yarn install --no-immutable",
-  "buildCommand": "yarn turbo run build --filter=@calcom/web...",
+  "buildCommand": "yarn vercel-build",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
   "env": {
