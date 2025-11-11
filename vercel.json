@@ -1,0 +1,9 @@
+{
+  "installCommand": "yarn install --no-immutable",
+  "buildCommand": "yarn turbo run build --filter=@calcom/web...",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1"
+  }
+}
