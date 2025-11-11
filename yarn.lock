@@ -22408,9 +22408,10 @@ __metadata:
     prettier: ^2.8.6
     prismock: 1.35.3
     resize-observer-polyfill: ^1.5.1
+    ts-node: ^10.9.2
     tsc-absolute: ^1.0.0
     turbo: ^2.5.5
-    typescript: 5.9.0-beta
+    typescript: ^5.9.3
     vitest: ^2.1.9
     vitest-fetch-mock: ^0.3.0
     vitest-mock-extended: ^2.0.2
@@ -46682,6 +46683,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-node@npm:^10.9.2":
+  version: 10.9.2
+  resolution: "ts-node@npm:10.9.2"
+  dependencies:
+    "@cspotcode/source-map-support": ^0.8.0
+    "@tsconfig/node10": ^1.0.7
+    "@tsconfig/node12": ^1.0.7
+    "@tsconfig/node14": ^1.0.0
+    "@tsconfig/node16": ^1.0.2
+    acorn: ^8.4.1
+    acorn-walk: ^8.1.1
+    arg: ^4.1.0
+    create-require: ^1.1.0
+    diff: ^4.0.1
+    make-error: ^1.1.1
+    v8-compile-cache-lib: ^3.0.1
+    yn: 3.1.1
+  peerDependencies:
+    "@swc/core": ">=1.2.50"
+    "@swc/wasm": ">=1.2.50"
+    "@types/node": "*"
+    typescript: ">=2.7"
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    "@swc/wasm":
+      optional: true
+  bin:
+    ts-node: dist/bin.js
+    ts-node-cwd: dist/bin-cwd.js
+    ts-node-esm: dist/bin-esm.js
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: fde256c9073969e234526e2cfead42591b9a2aec5222bac154b0de2fa9e4ceb30efcd717ee8bc785a56f3a119bdd5aa27b333d9dbec94ed254bd26f8944c67ac
+  languageName: node
+  linkType: hard
+
 "tsc-absolute@npm:^1.0.0":
   version: 1.0.0
   resolution: "tsc-absolute@npm:1.0.0"
@@ -47358,16 +47397,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.9.0-beta":
-  version: 5.9.0-beta
-  resolution: "typescript@npm:5.9.0-beta"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 42564de845d58e611b774b6222eec4aa75eaf88c79dde2b6e4d2366e2e9da344af0cdb1cc5a8fc2300dc8f33a794fafd1f7aa3ffea63caefe61f2745cb471ab8
-  languageName: node
-  linkType: hard
-
 "typescript@npm:5.9.2, typescript@npm:^5.9.0-beta, typescript@npm:^5.9.2":
   version: 5.9.2
   resolution: "typescript@npm:5.9.2"
@@ -47388,6 +47417,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^5.9.3":
+  version: 5.9.3
+  resolution: "typescript@npm:5.9.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 0d0ffb84f2cd072c3e164c79a2e5a1a1f4f168e84cb2882ff8967b92afe1def6c2a91f6838fb58b168428f9458c57a2ba06a6737711fdd87a256bbe83e9a217f
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@5.3.3#~builtin<compat/typescript>":
   version: 5.3.3
   resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=1f5320"
@@ -47395,16 +47434,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: f61375590b3162599f0f0d5b8737877ac0a7bc52761dbb585d67e7b8753a3a4c42d9a554c4cc929f591ffcf3a2b0602f65ae3ce74714fd5652623a816862b610
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@5.9.0-beta#~builtin<compat/typescript>":
-  version: 5.9.0-beta
-  resolution: "typescript@patch:typescript@npm%3A5.9.0-beta#~builtin<compat/typescript>::version=5.9.0-beta&hash=1f5320"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 4a3a8b55e8b64f01ae92bab8b93771817e716e4956a07fe16d8ce33a0078da11e2ab5402f4ea8db6820dc4dbe13ca5affabfa57da9f7176e753f6e9f80ed79db
   languageName: node
   linkType: hard
 
@@ -47425,6 +47454,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: ab417a2f398380c90a6cf5a5f74badd17866adf57f1165617d6a551f059c3ba0a3e4da0d147b3ac5681db9ac76a303c5876394b13b3de75fdd5b1eaa06181c9d
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^5.9.3#~builtin<compat/typescript>":
+  version: 5.9.3
+  resolution: "typescript@patch:typescript@npm%3A5.9.3#~builtin<compat/typescript>::version=5.9.3&hash=1f5320"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 8bb8d86819ac86a498eada254cad7fb69c5f74778506c700c2a712daeaff21d3a6f51fd0d534fe16903cb010d1b74f89437a3d02d4d0ff5ca2ba9a4660de8497
   languageName: node
   linkType: hard
 

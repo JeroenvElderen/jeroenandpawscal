@@ -110,9 +110,10 @@
     "prettier": "^2.8.6",
     "prismock": "1.35.3",
     "resize-observer-polyfill": "^1.5.1",
+    "ts-node": "^10.9.2",
     "tsc-absolute": "^1.0.0",
     "turbo": "^2.5.5",
-    "typescript": "5.9.0-beta",
+    "typescript": "^5.9.3",
     "vitest": "^2.1.9",
     "vitest-fetch-mock": "^0.3.0",
     "vitest-mock-extended": "^2.0.2"
