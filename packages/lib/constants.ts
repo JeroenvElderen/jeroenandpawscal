@@ -8,7 +8,7 @@ export const IS_PRODUCTION_BUILD = process.env.NODE_ENV === "production";
 export const ORGANIZER_EMAIL_EXEMPT_DOMAINS = process.env.ORGANIZER_EMAIL_EXEMPT_DOMAINS || "";
 const IS_DEV = CALCOM_ENV === "development";
 export const SINGLE_ORG_SLUG = process.env.NEXT_PUBLIC_SINGLE_ORG_SLUG;
-/** https://app.cal.com */
+/** https://app.jeroenandpaws.com */
 export const WEBAPP_URL =
   process.env.NEXT_PUBLIC_WEBAPP_URL ||
   VERCEL_URL ||
@@ -23,16 +23,17 @@ export const WEBAPP_URL_FOR_OAUTH = IS_PRODUCTION || IS_DEV ? WEBAPP_URL : "http
 
 /** @deprecated use `WEBAPP_URL` */
 export const BASE_URL = WEBAPP_URL;
-export const WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL || "https://cal.com";
-export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Cal.com";
-export const SUPPORT_MAIL_ADDRESS = process.env.NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS || "help@cal.com";
-export const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "Cal.com, Inc.";
-export const SENDER_ID = process.env.NEXT_PUBLIC_SENDER_ID || "Cal";
-export const SENDER_NAME = process.env.NEXT_PUBLIC_SENDGRID_SENDER_NAME || "Cal.com";
+export const WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL || "https://jeroenandpaws.com";
+export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "jeroenandpaws.com";
+export const SUPPORT_MAIL_ADDRESS =
+  process.env.NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS || "support@jeroenandpaws.com";
+export const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "Jeroen and Paws";
+export const SENDER_ID = process.env.NEXT_PUBLIC_SENDER_ID || "JeroenandPaws";
+export const SENDER_NAME = process.env.NEXT_PUBLIC_SENDGRID_SENDER_NAME || "jeroenandpaws.com";
 export const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || APP_NAME;
 
 // This is the URL from which all Cal Links and their assets are served.
-// Use website URL to make links shorter(cal.com and not app.cal.com)
+// Use website URL to make links shorter(jeroenandpaws.com and not app.jeroenandpaws.com)
 // As website isn't setup for preview environments, use the webapp url instead
 // If it's a .vercel.app domain, keep it.
 // Else use the website url if defined and finally fallback to the webapp url
@@ -42,20 +43,17 @@ export const CAL_URL = new URL(WEBAPP_URL).hostname.endsWith(".vercel.app")
 
 export const IS_CALCOM =
   WEBAPP_URL &&
-  (new URL(WEBAPP_URL).hostname.endsWith("cal.com") ||
-    new URL(WEBAPP_URL).hostname.endsWith("cal.dev") ||
-    new URL(WEBAPP_URL).hostname.endsWith("cal.qa") ||
-    new URL(WEBAPP_URL).hostname.endsWith("cal-staging.com") ||
-    new URL(WEBAPP_URL).hostname.endsWith("cal.eu"));
+  (new URL(WEBAPP_URL).hostname.endsWith("jeroenandpaws.com") ||
+    new URL(WEBAPP_URL).hostname.endsWith("jeroenandpaws.dev") ||
+    new URL(WEBAPP_URL).hostname.endsWith("jeroenandpaws.app"));
 
 export const CONSOLE_URL =
-  new URL(WEBAPP_URL).hostname.endsWith(".cal.dev") ||
-  new URL(WEBAPP_URL).hostname.endsWith(".cal.qa") ||
-  new URL(WEBAPP_URL).hostname.endsWith(".cal-staging.com") ||
+  new URL(WEBAPP_URL).hostname.endsWith(".jeroenandpaws.dev") ||
+  new URL(WEBAPP_URL).hostname.endsWith(".jeroenandpaws.app") ||
   process.env.NODE_ENV !== "production"
-    ? `https://console.cal.dev`
-    : `https://console.cal.com`;
-const CAL_DOMAINS = [".cal.com", ".cal.dev", ".cal.eu", ".cal.qa"];
+    ? `https://console.jeroenandpaws.dev`
+    : `https://console.jeroenandpaws.com`;
+const CAL_DOMAINS = [".jeroenandpaws.com", ".jeroenandpaws.dev", ".jeroenandpaws.app"];
 const WEBAPP_HOSTNAME = new URL(WEBAPP_URL).hostname;
 export const IS_SELF_HOSTED = !CAL_DOMAINS.some((domain) => WEBAPP_HOSTNAME.endsWith(domain));
 export const EMBED_LIB_URL = process.env.NEXT_PUBLIC_EMBED_LIB_URL || `${WEBAPP_URL}/embed/embed.js`;
@@ -96,12 +94,12 @@ export const APPLE_TOUCH_ICON = "/apple-touch-icon.png";
 export const MSTILE_ICON = "/mstile-150x150.png";
 export const ANDROID_CHROME_ICON_192 = "/android-chrome-192x192.png";
 export const ANDROID_CHROME_ICON_256 = "/android-chrome-256x256.png";
-export const ROADMAP = "https://cal.com/roadmap";
-export const DESKTOP_APP_LINK = "https://cal.com/download";
-export const JOIN_COMMUNITY = "https://github.com/calcom/cal.com/discussions";
-export const POWERED_BY_URL = "https://go.cal.com/booking";
-export const DOCS_URL = "https://cal.com/docs";
-export const DEVELOPER_DOCS = "https://developer.cal.com";
+export const ROADMAP = "https://jeroenandpaws.com";
+export const DESKTOP_APP_LINK = "https://jeroenandpaws.com";
+export const JOIN_COMMUNITY = "https://jeroenandpaws.com";
+export const POWERED_BY_URL = "https://jeroenandpaws.com";
+export const DOCS_URL = "https://jeroenandpaws.com/docs";
+export const DEVELOPER_DOCS = "https://jeroenandpaws.com/developers";
 export const SEO_IMG_DEFAULT = `${CAL_URL}/og-image.png`;
 // The Dynamic OG Image is passed through Next's Image API to further optimize it.
 // This results in a 80% smaller image 🤯. It is however important that for the query
@@ -153,8 +151,8 @@ export const CREDENTIAL_SYNC_ENDPOINT = process.env.CALCOM_CREDENTIAL_SYNC_ENDPO
 // Service Account Encryption Key for encrypting/decrypting service account keys
 export const SERVICE_ACCOUNT_ENCRYPTION_KEY = process.env.CALCOM_SERVICE_ACCOUNT_ENCRYPTION_KEY;
 
-export const DEFAULT_LIGHT_BRAND_COLOR = "#292929";
-export const DEFAULT_DARK_BRAND_COLOR = "#fafafa";
+export const DEFAULT_LIGHT_BRAND_COLOR = "#7c45f3";
+export const DEFAULT_DARK_BRAND_COLOR = "#9065ef";
 
 export const TOP_BANNER_HEIGHT = 40;
 
@@ -181,10 +179,12 @@ export const ORG_SELF_SERVE_ENABLED = process.env.NEXT_PUBLIC_ORG_SELF_SERVE_ENA
 export const ORG_MINIMUM_PUBLISHED_TEAMS_SELF_SERVE = 0;
 export const ORG_MINIMUM_PUBLISHED_TEAMS_SELF_SERVE_HELPER_DIALOGUE = 1;
 
-export const CALCOM_PRIVATE_API_ROUTE = process.env.CALCOM_PRIVATE_API_ROUTE || "https://goblin.cal.com";
+export const CALCOM_PRIVATE_API_ROUTE =
+  process.env.CALCOM_PRIVATE_API_ROUTE || "https://api.jeroenandpaws.com";
 export const WEBSITE_PRIVACY_POLICY_URL =
-  process.env.NEXT_PUBLIC_WEBSITE_PRIVACY_POLICY_URL || "https://cal.com/privacy";
-export const WEBSITE_TERMS_URL = process.env.NEXT_PUBLIC_WEBSITE_TERMS_URL || "https://cal.com/terms";
+  process.env.NEXT_PUBLIC_WEBSITE_PRIVACY_POLICY_URL || "https://jeroenandpaws.com/privacy";
+export const WEBSITE_TERMS_URL =
+  process.env.NEXT_PUBLIC_WEBSITE_TERMS_URL || "https://jeroenandpaws.com/terms";
 export const LINGO_DOT_DEV_API_KEY = process.env.LINGO_DOT_DEV_API_KEY;
 
 /**
@@ -195,19 +195,19 @@ export const ROLLING_WINDOW_PERIOD_MAX_DAYS_TO_CHECK = 30 + 31;
 
 export const TRANSCRIPTION_STARTED_ICON = IS_PRODUCTION
   ? `${WEBAPP_URL}/sparkles-red.svg`
-  : `https://app.cal.com/sparkles-red.svg`;
+  : `https://app.jeroenandpaws.com/sparkles-red.svg`;
 
 export const TRANSCRIPTION_STOPPED_ICON = IS_PRODUCTION
   ? `${WEBAPP_URL}/sparkles.svg`
-  : `https://app.cal.com/sparkles.svg`;
+  : `https://app.jeroenandpaws.com/sparkles.svg`;
 
 export const RECORDING_DEFAULT_ICON = IS_PRODUCTION
   ? `${WEBAPP_URL}/start-recording.svg`
-  : `https://app.cal.com/start-recording.svg`;
+  : `https://app.jeroenandpaws.com/start-recording.svg`;
 
 export const RECORDING_IN_PROGRESS_ICON = IS_PRODUCTION
   ? `${WEBAPP_URL}/stop-recording.svg`
-  : `https://app.cal.com/stop-recording.svg`;
+  : `https://app.jeroenandpaws.com/stop-recording.svg`;
 
 export const SCOPE_USERINFO_PROFILE = "https://www.googleapis.com/auth/userinfo.profile";
 export const SCOPE_USERINFO_EMAIL = "https://www.googleapis.com/auth/userinfo.email";

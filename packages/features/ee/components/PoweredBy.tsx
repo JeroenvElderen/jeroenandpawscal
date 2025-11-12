@@ -23,7 +23,7 @@ const PoweredByCal = ({
             <img
               className="-mt-px inline h-[10px] w-auto dark:invert"
               src={`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/logo`}
-              alt="Cal.com Logo"
+              alt={`${APP_NAME} logo`}
             />
           </>
         ) : (

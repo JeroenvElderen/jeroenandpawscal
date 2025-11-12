@@ -1,5 +1,5 @@
 import { dir } from "i18next";
-import { Inter } from "next/font/google";
+import { Inter, DM_Sans, Manrope } from "next/font/google";
 import localFont from "next/font/local";
 import { headers, cookies } from "next/headers";
 import React from "react";
@@ -22,6 +22,20 @@ const calFont = localFont({
   preload: true,
   display: "block",
   weight: "600",
+});
+const manropeFont = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-manrope",
+  preload: true,
+  display: "swap",
+});
+const dmSansFont = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
+  preload: true,
+  display: "swap",
 });
 
 export const viewport = {
@@ -117,6 +131,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           :root {
             --font-inter: ${interFont.style.fontFamily.replace(/\'/g, "")};
             --font-cal: ${calFont.style.fontFamily.replace(/\'/g, "")};
+            --font-manrope: ${manropeFont.style.fontFamily.replace(/\'/g, "")};
+            --font-dm-sans: ${dmSansFont.style.fontFamily.replace(/\'/g, "")};
           }
         `}</style>
       </head>

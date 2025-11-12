@@ -648,3 +648,114 @@ html[dir="rtl"] .react-tel-input .flag-dropdown {
   left: auto !important;
   right: 0 !important;
 }
+
+.jeroenandpaws-theme {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+  width: 100%;
+  padding: var(--cal-spacing-12) var(--cal-spacing-4);
+  font-family: var(--font-manrope, "Manrope", sans-serif);
+  color: var(--cal-text);
+  background-color: #0c081f;
+  background-image:
+    radial-gradient(65% 55% at 15% 15%, rgba(124, 69, 243, 0.35), rgba(12, 8, 31, 0)),
+    radial-gradient(55% 45% at 85% 20%, rgba(144, 101, 239, 0.25), rgba(12, 8, 31, 0)),
+    radial-gradient(70% 65% at 50% 100%, rgba(32, 21, 73, 0.55), rgba(12, 8, 31, 0));
+  --cal-bg: #0c081f;
+  --cal-bg-muted: #121026;
+  --cal-bg-subtle: #181233;
+  --cal-bg-emphasis: #211a3f;
+  --cal-bg-primary: #121026;
+  --cal-bg-primary-emphasis: #1c1434;
+  --cal-bg-brand: #7c45f3;
+  --cal-bg-brand-emphasis: #a47ef7;
+  --cal-bg-brand-muted: rgba(124, 69, 243, 0.18);
+  --cal-bg-inverted: #f9f5ff;
+  --cal-border: rgba(255, 255, 255, 0.18);
+  --cal-border-subtle: rgba(255, 255, 255, 0.12);
+  --cal-border-muted: rgba(255, 255, 255, 0.08);
+  --cal-border-emphasis: rgba(255, 255, 255, 0.26);
+  --cal-border-booker: rgba(255, 255, 255, 0.14);
+  --cal-border-booker-width: 1px;
+  --cal-text-emphasis: #ffffff;
+  --cal-text: rgba(244, 240, 255, 0.94);
+  --cal-text-subtle: rgba(221, 215, 255, 0.7);
+  --cal-text-muted: rgba(221, 215, 255, 0.45);
+  --cal-text-inverted: #0c081f;
+  --cal-brand: #7c45f3;
+  --cal-brand-emphasis: #a47ef7;
+  --cal-brand-subtle: rgba(124, 69, 243, 0.2);
+  --cal-brand-text: #ffffff;
+  --cal-brand-accent: #9065ef;
+  --cal-radius: 0.75rem;
+  --cal-radius-xl: 1.25rem;
+  --cal-radius-3xl: 1.75rem;
+}
+
+.jeroenandpaws-theme::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 80% at 10% 0%, rgba(124, 69, 243, 0.35), rgba(12, 8, 31, 0)),
+    radial-gradient(55% 70% at 90% 15%, rgba(164, 126, 247, 0.2), rgba(12, 8, 31, 0)),
+    radial-gradient(60% 60% at 50% 90%, rgba(44, 31, 88, 0.55), rgba(12, 8, 31, 0));
+  filter: blur(0px);
+  z-index: -1;
+}
+
+.jeroenandpaws-theme h1,
+.jeroenandpaws-theme h2,
+.jeroenandpaws-theme h3,
+.jeroenandpaws-theme h4,
+.jeroenandpaws-theme h5,
+.jeroenandpaws-theme h6 {
+  font-family: var(--font-dm-sans, var(--font-manrope, "Manrope", sans-serif));
+  letter-spacing: -0.01em;
+}
+
+.jeroenandpaws-theme [data-testid="booker-container"] {
+  border-radius: 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(18, 16, 38, 0.92), rgba(22, 18, 48, 0.72));
+  box-shadow: 0 40px 120px rgba(12, 8, 31, 0.65);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}
+
+.jeroenandpaws-theme button,
+.jeroenandpaws-theme .bg-brand {
+  border-radius: 0.75rem;
+  background-image: linear-gradient(135deg, #7c45f3 0%, #a47ef7 100%);
+  box-shadow: 0 16px 40px rgba(124, 69, 243, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.jeroenandpaws-theme button:hover,
+.jeroenandpaws-theme .bg-brand:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 48px rgba(124, 69, 243, 0.45);
+}
+
+.jeroenandpaws-theme input,
+.jeroenandpaws-theme select,
+.jeroenandpaws-theme textarea {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background-color: rgba(12, 8, 31, 0.45);
+  color: var(--cal-text-emphasis);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.jeroenandpaws-theme input:focus,
+.jeroenandpaws-theme select:focus,
+.jeroenandpaws-theme textarea:focus {
+  border-color: rgba(164, 126, 247, 0.75);
+  box-shadow: 0 0 0 3px rgba(164, 126, 247, 0.2);
+}
+
+.jeroenandpaws-theme .text-subtle {
+  color: var(--cal-text-subtle);
+}
