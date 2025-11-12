@@ -203,4 +203,48 @@ describe("Tests for DatePicker Component", () => {
       expect(firstDayOfMonth).toBeTruthy();
     });
   });
+
+  describe("Availability styling", () => {
+    test("Days without remaining availability are disabled", async () => {
+      const browsingDate = dayjs("2024-01-01");
+
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-01-01T00:00:00Z"));
+
+      try {
+        const { getAllByTestId } = render(
+          <BookerStoreProvider>
+            <TooltipProvider>
+              <DatePicker
+                onChange={noop}
+                browsingDate={browsingDate}
+                locale="en"
+                includedDates={["2024-01-10"]}
+                slots={{
+                  "2024-01-10": [],
+                }}
+                periodData={{
+                  periodType: PeriodType.UNLIMITED,
+                  periodDays: null,
+                  periodCountCalendarDays: false,
+                  periodStartDate: null,
+                  periodEndDate: null,
+                }}
+              />
+            </TooltipProvider>
+          </BookerStoreProvider>
+        );
+
+        const dayButtons = getAllByTestId("day");
+        const dayButton = dayButtons.find((element) => element.textContent === "10");
+
+        expect(dayButton).toBeDefined();
+        expect(dayButton).toBeDisabled();
+        expect(dayButton).toHaveAttribute("data-disabled", "true");
+        expect(dayButton?.className).toContain("disabled:bg-muted");
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
 });
