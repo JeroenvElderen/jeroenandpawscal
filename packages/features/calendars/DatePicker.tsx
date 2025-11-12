@@ -398,10 +398,32 @@ const DatePicker = ({
     };
     scrollToTimeSlots?: () => void;
   }) => {
-  const minDate = passThroughProps.minDate;
-  const rawBrowsingDate = passThroughProps.browsingDate || dayjs().startOf("month");
+  const { minDate: minDateProp, browsingDate: browsingDateProp, ...restPassThroughProps } = passThroughProps;
+
+  const normalizedMinDate =
+    minDateProp !== undefined && minDateProp !== null
+      ? dayjs(minDateProp).startOf("day")
+      : dayjs().startOf("day");
+
+  const periodStartDate =
+    periodData?.periodStartDate !== null && periodData?.periodStartDate !== undefined
+      ? dayjs(periodData.periodStartDate).startOf("day")
+      : null;
+
+  const effectiveMinDate =
+    periodStartDate && periodStartDate.isAfter(normalizedMinDate) ? periodStartDate : normalizedMinDate;
+
+  const rawBrowsingDate =
+    browsingDateProp !== undefined && browsingDateProp !== null
+      ? dayjs(browsingDateProp)
+      : dayjs().startOf("month");
+
   const browsingDate =
-    minDate && rawBrowsingDate.valueOf() < minDate.valueOf() ? dayjs(minDate) : rawBrowsingDate;
+    rawBrowsingDate.valueOf() < effectiveMinDate.valueOf() ? effectiveMinDate : rawBrowsingDate;
+
+  const disablePreviousMonth = !browsingDate
+    .startOf("month")
+    .isAfter(effectiveMinDate.startOf("month"));
 
   const { i18n, t } = useLocale();
   const bookingData = useBookerStoreContext((state) => state.bookingData);
@@ -440,12 +462,12 @@ const DatePicker = ({
             <Button
               className={classNames(
                 `group p-1 opacity-70 transition hover:opacity-100 rtl:rotate-180`,
-                !browsingDate.isAfter(dayjs()) &&
+                disablePreviousMonth &&
                   `disabled:text-bookinglighter hover:bg-background hover:opacity-70`,
                 customClassNames?.datePickerToggle
               )}
               onClick={() => changeMonth(-1)}
-              disabled={!browsingDate.isAfter(dayjs())}
+              disabled={disablePreviousMonth}
               data-testid="decrementMonth"
               color="minimal"
               variant="icon"
@@ -487,8 +509,9 @@ const DatePicker = ({
           }}
           weekStart={weekStart}
           selected={selected}
-          {...passThroughProps}
+          {...restPassThroughProps}
           browsingDate={browsingDate}
+          minDate={effectiveMinDate.toDate()}
           month={month}
           nextMonthButton={() => changeMonth(+1)}
           slots={slots}
