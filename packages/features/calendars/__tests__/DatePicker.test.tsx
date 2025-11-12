@@ -69,6 +69,56 @@ describe("Tests for DatePicker Component", () => {
     await expect(selectedMonthLabel).toHaveAttribute("dateTime", testDate.format("YYYY-MM"));
   });
 
+  test("Should disable dates before the period start date", async () => {
+    const browsingDate = dayjs("2025-11-01");
+    const periodStart = dayjs("2025-11-12");
+    const slots = {
+      "2025-11-11": [
+        {
+          time: dayjs("2025-11-11T10:00:00").toISOString(),
+        },
+      ],
+      "2025-11-13": [
+        {
+          time: dayjs("2025-11-13T10:00:00").toISOString(),
+        },
+      ],
+    };
+
+    vi.useFakeTimers();
+    vi.setSystemTime(dayjs("2025-10-01T00:00:00").toDate());
+
+    const { getAllByTestId } = render(
+      <BookerStoreProvider>
+        <TooltipProvider>
+          <DatePicker
+            onChange={noop}
+            browsingDate={browsingDate}
+            locale="en"
+            slots={slots}
+            periodData={{
+              periodType: PeriodType.RANGE,
+              periodDays: null,
+              periodCountCalendarDays: false,
+              periodStartDate: periodStart.toDate(),
+              periodEndDate: null,
+            }}
+          />
+        </TooltipProvider>
+      </BookerStoreProvider>
+    );
+
+    const dayButtons = getAllByTestId("day") as HTMLButtonElement[];
+    const dayBeforePeriod = dayButtons.find((day) => day.textContent?.trim() === "11");
+    const dayAtPeriodStart = dayButtons.find((day) => day.textContent?.trim() === "12");
+
+    expect(dayBeforePeriod?.disabled).toBe(true);
+    expect(dayAtPeriodStart?.disabled).toBe(false);
+
+    vi.setSystemTime(vi.getRealSystemTime());
+    vi.useRealTimers();
+  });
+
   describe("End-of-Month UI Improvements", () => {
     const createMockSlots = (dates: string[]) => {
       const slots: Record<string, { time: string; userIds?: number[] }[]> = {};
