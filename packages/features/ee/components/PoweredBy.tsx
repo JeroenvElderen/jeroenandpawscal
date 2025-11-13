@@ -20,11 +20,9 @@ const PoweredByCal = ({
         {!logoOnly && <>{t("powered_by")} </>}
         {APP_NAME === "Cal.com" || !hasValidLicense ? (
           <>
-            <img
-              className="-mt-px inline h-[10px] w-auto dark:invert"
-              src={`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/logo`}
-              alt={`${APP_NAME} logo`}
-            />
+            <h2 className="poweredbyjeroen">
+              jeroenandpaws.com
+              </h2>
           </>
         ) : (
           <span className="text-emphasis font-semibold opacity-50 hover:opacity-100">{APP_NAME}</span>

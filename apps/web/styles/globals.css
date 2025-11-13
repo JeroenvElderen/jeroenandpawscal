@@ -649,6 +649,17 @@ html[dir="rtl"] .react-tel-input .flag-dropdown {
   right: 0 !important;
 }
 
+.poweredbyjeroen {
+  font-size: 20px;
+  color: rgba(255,255,255,0.5);
+}
+
+.jeroenandpaws-theme [data-testid="day"][data-disabled="true"] {
+  background-color: #2a253d !important; /* your disabled background */
+  color: #7c45f3 !important;            /* your disabled text */
+  opacity: 0.6 !important;              /* optional */
+}
+
 .jeroenandpaws-theme {
   position: relative;
   isolation: isolate;
@@ -663,9 +674,9 @@ html[dir="rtl"] .react-tel-input .flag-dropdown {
     radial-gradient(55% 45% at 85% 20%, rgba(144, 101, 239, 0.25), rgba(12, 8, 31, 0)),
     radial-gradient(70% 65% at 50% 100%, rgba(32, 21, 73, 0.55), rgba(12, 8, 31, 0));
   --cal-bg: #0c081f;
-  --cal-bg-muted: #121026;
+  --cal-bg-muted: #2a253d;
   --cal-bg-subtle: #181233;
-  --cal-bg-emphasis: #211a3f;
+  --cal-bg-emphasis: #121026;
   --cal-bg-primary: #121026;
   --cal-bg-primary-emphasis: #1c1434;
   --cal-bg-brand: #7c45f3;
@@ -681,7 +692,7 @@ html[dir="rtl"] .react-tel-input .flag-dropdown {
   --cal-text-emphasis: #ffffff;
   --cal-text: rgba(244, 240, 255, 0.94);
   --cal-text-subtle: rgba(221, 215, 255, 0.7);
-  --cal-text-muted: rgba(221, 215, 255, 0.45);
+  --cal-text-muted: #6c5fa8;
   --cal-text-inverted: #0c081f;
   --cal-brand: #7c45f3;
   --cal-brand-emphasis: #a47ef7;
@@ -691,6 +702,12 @@ html[dir="rtl"] .react-tel-input .flag-dropdown {
   --cal-radius: 0.75rem;
   --cal-radius-xl: 1.25rem;
   --cal-radius-3xl: 1.75rem;
+}
+
+.jeroenandpaws-theme .day-active {
+  background-color: #b57aff !important;
+  color: white !important;
+  border: 2px solid #d7b4ff !important;
 }
 
 .jeroenandpaws-theme::before {
@@ -758,4 +775,33 @@ html[dir="rtl"] .react-tel-input .flag-dropdown {
 
 .jeroenandpaws-theme .text-subtle {
   color: var(--cal-text-subtle);
+}
+
+
+.jeroenandpaws-theme [data-testid="booker-container"] [class*="grid-area:header"].fixed {
+  top: var(--cal-spacing-10);
+  right: var(--cal-spacing-10);
+  left: auto;
+}
+
+html[dir="rtl"] .jeroenandpaws-theme [data-testid="booker-container"] [class*="grid-area:header"].fixed {
+  right: auto;
+  left: var(--cal-spacing-10);
+}
+
+.jeroenandpaws-theme [data-testid="booker-container"]
+  [class*="grid-area:header"].fixed
+  > .flex {
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--cal-spacing-3);
+}
+
+.jeroenandpaws-theme .bg-muted {
+  background-color: transparent !important;
+}
+
+.jeroenandpaws-theme .bg-subtle,
+.jeroenandpaws-theme .bg-default {
+  background-color: transparent !important;
 }

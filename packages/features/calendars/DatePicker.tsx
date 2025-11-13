@@ -94,10 +94,10 @@ const Day = ({
       type="button"
       style={disabled ? { ...disabledDateButtonEmbedStyles } : { ...enabledDateButtonEmbedStyles }}
       className={classNames(
-        "disabled:text-bookinglighter disabled:!text-bookinglighter disabled:bg-muted disabled:!bg-muted disabled:opacity-70 absolute bottom-0 left-0 right-0 top-0 mx-auto w-full rounded-md border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent disabled:font-light",
+        "disabled:text-bookinglighter disabled:!text-bookinglighter disabled:bg-muted disabled:!bg-muted disabled:opacity-70 absolute bottom-0 left-0 right-0 top-0 mx-auto w-full rounded-md border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent disabled:font-light ",
         customClassName?.dayContainer,
         active
-          ? classNames("bg-brand-default text-brand", customClassName?.dayActive)
+          ? classNames("bg-brand-default text-brand day-active", customClassName?.dayActive)
           : !disabled
           ? classNames(
               "hover:border-brand-default",
@@ -271,7 +271,7 @@ const Days = ({
     const isOOOAllDay = daySlots.length > 0 && daySlots.every((slot) => slot.away);
     const away = isOOOAllDay;
 
-    const isBeforeToday = 
+    const isBeforeToday =
       day.startOf("day").isBefore(today);
 
     const disabled = isBeforeToday
