@@ -271,7 +271,11 @@ const Days = ({
     const isOOOAllDay = daySlots.length > 0 && daySlots.every((slot) => slot.away);
     const away = isOOOAllDay;
 
-    const disabled = away
+    const isBeforeToday = day.isBefore(today, "day");
+
+    const disabled = isBeforeToday
+      ? true
+      : away
       ? !oooInfo?.toUser
       : isNextMonth
       ? !hasAvailableSlots
