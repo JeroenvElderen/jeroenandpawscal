@@ -94,16 +94,16 @@ const Day = ({
       type="button"
       style={disabled ? { ...disabledDateButtonEmbedStyles } : { ...enabledDateButtonEmbedStyles }}
       className={classNames(
-        "disabled:text-bookinglighter disabled:bg-muted absolute bottom-0 left-0 right-0 top-0 mx-auto w-full rounded-md border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent disabled:font-light ",
+        "disabled:text-bookinglighter disabled:!text-bookinglighter disabled:bg-muted disabled:!bg-muted disabled:opacity-70 absolute bottom-0 left-0 right-0 top-0 mx-auto w-full rounded-md border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent disabled:font-light",
+        customClassName?.dayContainer,
         active
-          ? "bg-brand-default text-brand"
+          ? classNames("bg-brand-default text-brand", customClassName?.dayActive)
           : !disabled
-          ? `${
-              !customClassName?.dayActive
-                ? "hover:border-brand-default text-emphasis bg-emphasis"
-                : `hover:border-brand-default ${customClassName.dayActive}`
-            }`
-          : `${customClassName ? "" : " text-mute"}`
+          ? classNames(
+              "hover:border-brand-default",
+              !customClassName?.dayContainer && "text-emphasis bg-emphasis"
+            )
+          : !customClassName?.dayContainer && "text-mute"
       )}
       data-testid="day"
       data-disabled={disabled}
