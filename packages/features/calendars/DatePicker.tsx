@@ -189,7 +189,7 @@ const Days = ({
     includedDates: props.includedDates,
   });
 
-  const today = dayjs();
+  const today = dayjs().startOf("day");
   const firstDayOfMonth = browsingDate.startOf("month");
   const isSecondWeekOver = today.isAfter(firstDayOfMonth.add(2, "week"));
   let days: (Dayjs | null)[] = [];
@@ -271,7 +271,8 @@ const Days = ({
     const isOOOAllDay = daySlots.length > 0 && daySlots.every((slot) => slot.away);
     const away = isOOOAllDay;
 
-    const isBeforeToday = day.isBefore(today, "day");
+    const isBeforeToday = 
+      day.startOf("day").isBefore(today);
 
     const disabled = isBeforeToday
       ? true
