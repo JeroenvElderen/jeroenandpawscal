@@ -155,6 +155,8 @@ export type BookerStore = {
    */
   formValues: Record<string, any>;
   setFormValues: (values: Record<string, any>) => void;
+  extraFeatures: string[];
+  setExtraFeatures: (features: string[] | ((current: string[]) => string[])) => void;
   /**
    * Force event being a team event, so we only query for team events instead
    * of also include 'user' events and return the first event that matches with
@@ -441,6 +443,11 @@ export const createBookerStore = () =>
     setFormValues: (formValues: Record<string, any>) => {
       set({ formValues });
     },
+    extraFeatures: [],
+    setExtraFeatures: (features) =>
+      set((state) => ({
+        extraFeatures: typeof features === "function" ? features(state.extraFeatures) : features,
+      })),
     org: null,
     setOrg: (org: string | null | undefined) => {
       set({ org });
