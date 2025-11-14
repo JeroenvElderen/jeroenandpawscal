@@ -5,6 +5,7 @@ import type { FieldError } from "react-hook-form";
 
 import { getPaymentAppData } from "@calcom/app-store/_utils/payments/getPaymentAppData";
 import { useIsPlatformBookerEmbed } from "@calcom/atoms/hooks/useIsPlatformBookerEmbed";
+import dayjs from "@calcom/dayjs";
 import { useBookerStoreContext } from "@calcom/features/bookings/Booker/BookerStoreProvider";
 import type { BookerEvent } from "@calcom/features/bookings/types";
 import ServerTrans from "@calcom/lib/components/ServerTrans";
@@ -15,7 +16,7 @@ import type { TimeFormat } from "@calcom/lib/timeFormat";
 import { Alert } from "@calcom/ui/components/alert";
 import { Button } from "@calcom/ui/components/button";
 import { EmptyScreen } from "@calcom/ui/components/empty-screen";
-import { Form } from "@calcom/ui/components/form";
+import { DateRangePicker, Form, Label } from "@calcom/ui/components/form";
 
 import { formatEventFromTime } from "../../utils/dates";
 import { useBookerTime } from "../hooks/useBookerTime";
@@ -78,6 +79,10 @@ export const BookEventForm = ({
   const rescheduleUid = useBookerStoreContext((state) => state.rescheduleUid);
   const username = useBookerStoreContext((state) => state.username);
   const isInstantMeeting = useBookerStoreContext((state) => state.isInstantMeeting);
+  const selectedDate = useBookerStoreContext((state) => state.selectedDate);
+  const selectedEndDate = useBookerStoreContext((state) => state.selectedEndDate);
+  const setSelectedEndDate = useBookerStoreContext((state) => state.setSelectedEndDate);
+  const setSelectedDate = useBookerStoreContext((state) => state.setSelectedDate)
   const isPlatformBookerEmbed = useIsPlatformBookerEmbed();
   const { timeFormat, timezone } = useBookerTime();
 
@@ -94,6 +99,37 @@ export const BookEventForm = ({
     if (!eventType) return "USD";
     return getPaymentAppData(eventType)?.currency || "USD";
   }, [eventType]);
+
+  const isMultiDayBookingEnabled = Boolean(eventType?.metadata?.multiDayBooking);
+  const rangeDates = useMemo(() => {
+    const start = selectedDate ? dayjs(selectedDate).toDate() : undefined;
+    const end = selectedEndDate ? dayjs(selectedEndDate).toDate() : undefined;
+    return { startDate: start, endDate: end };
+  }, [selectedDate, selectedEndDate]);
+
+  const handleRangeChange = ({ endDate }: { startDate?: Date; endDate?: Date }) => {
+    if (!selectedDate) {
+      setSelectedEndDate(null);
+      return;
+    }
+
+    if (!endDate) {
+      setSelectedEndDate(null);
+      return;
+    }
+
+    const start = dayjs(selectedDate);
+    const end = dayjs(endDate);
+
+    if (end.isBefore(start, "day")) {
+      setSelectedEndDate(null);
+      bookingForm.setError("globalError", { message: t("start_date_must_be_before_end_date") });
+      return;
+    }
+
+    bookingForm.clearErrors("globalError");
+    setSelectedEndDate(end.format("YYYY-MM-DD"));
+  };
 
   if (eventQuery.isError) return <Alert severity="warning" message={t("error_booking_event")} />;
   if (eventQuery.isPending || !eventQuery.data) return <FormSkeleton />;
@@ -138,6 +174,23 @@ export const BookEventForm = ({
           isPaidEvent={isPaidEvent}
           paymentCurrency={paymentCurrency}
         />
+        {isMultiDayBookingEnabled && (
+          <div className="mt-6 space-y-2">
+            <Label className="text-emphasis text-sm font-semibold leading-none">
+              {t("select_multi_day_end_date")}
+            </Label>
+            <DateRangePicker
+              dates={rangeDates}
+              minDate={selectedDate ? dayjs(selectedDate).toDate() : undefined}
+              onDatesChange={handleRangeChange}
+              disabled={!selectedDate}
+              withoutPopover
+            />
+            {!selectedDate && (
+              <p className="text-subtle text-xs">{t("select_date_before_end_date")}</p>
+            )}
+          </div>
+        )}
         <AdditionalFeaturesSelector />
         {errors.hasFormErrors || errors.hasDataErrors ? (
           <div data-testid="booking-fail">

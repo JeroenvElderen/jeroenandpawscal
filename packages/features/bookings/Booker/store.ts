@@ -94,6 +94,8 @@ export type BookerStore = {
     omitUpdatingParams?: boolean;
     preventMonthSwitching?: boolean;
   }) => void;
+  selectedEndDate: string | null;
+  setSelectedEndDate: (date: string | null) => void;
   addToSelectedDate: (days: number) => void;
   /**
    * Multiple Selected Dates and Times
@@ -202,16 +204,18 @@ export const createBookerStore = () =>
       return set({ layout });
     },
     selectedDate: getQueryParam("date") || null,
+    selectedEndDate: null,
     setSelectedDate: ({ date: selectedDate, omitUpdatingParams = false, preventMonthSwitching = false }) => {
       // unset selected date
       if (!selectedDate) {
+        set({ selectedDate: null, selectedEndDate: null });
         removeQueryParam("date");
         return;
       }
 
       const currentSelection = dayjs(get().selectedDate);
       const newSelection = dayjs(selectedDate);
-      set({ selectedDate });
+      set({ selectedDate, selectedEndDate: null });
       if (!omitUpdatingParams && (!get().isPlatform || get().allowUpdatingUrlParams)) {
         updateQueryParam("date", selectedDate ?? "");
       }
@@ -225,6 +229,10 @@ export const createBookerStore = () =>
         }
       }
     },
+    setSelectedEndDate: (date: string | null) => {
+      set({ selectedEndDate: date });
+    },
+
     selectedDatesAndTimes: null,
     setSelectedDatesAndTimes: (selectedDatesAndTimes) => {
       set({ selectedDatesAndTimes });
@@ -247,7 +255,7 @@ export const createBookerStore = () =>
         }
       }
 
-      set({ selectedDate: newSelectionFormatted });
+      set({ selectedDate: newSelectionFormatted, selectedEndDate: null });
       if (!get().isPlatform || get().allowUpdatingUrlParams) {
         updateQueryParam("date", newSelectionFormatted);
       }
@@ -363,6 +371,7 @@ export const createBookerStore = () =>
         selectedDate:
           selectedDateInStore ||
           (["week_view", "column_view"].includes(layout) ? dayjs().format("YYYY-MM-DD") : null),
+        selectedEndDate: null,
         teamMemberEmail,
         crmOwnerRecordType,
         crmAppSlug,
@@ -395,6 +404,7 @@ export const createBookerStore = () =>
         set({
           month,
           selectedDate,
+          selectedEndDate: null,
           selectedTimeslot,
           isInstantMeeting,
         });

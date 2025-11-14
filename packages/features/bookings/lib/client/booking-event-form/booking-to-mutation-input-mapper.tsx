@@ -32,6 +32,7 @@ export type BookingOptions = {
   routingFormSearchParams?: RoutingFormSearchParams;
   isDryRunProp?: boolean;
   verificationCode?: string;
+  multiDayEndDate?: string | undefined;
 };
 
 export const mapBookingToMutationInput = ({
@@ -56,6 +57,7 @@ export const mapBookingToMutationInput = ({
   routingFormSearchParams,
   isDryRunProp,
   verificationCode,
+  multiDayEndDate,
 }: BookingOptions): BookingCreateBody => {
   const searchParams = new URLSearchParams(routingFormSearchParams ?? window.location.search);
   const routedTeamMemberIds = getRoutedTeamMemberIdsFromSearchParams(searchParams);
@@ -66,14 +68,38 @@ export const mapBookingToMutationInput = ({
   const _isDryRun = isDryRunProp !== undefined ? isDryRunProp : isBookingDryRun(searchParams);
   const dub_id = searchParams?.get("dub_id");
 
+  const startDate = dayjs(date);
+
+  const computeEnd = () => {
+    if (!multiDayEndDate) {
+      return startDate.add(duration || event.length, "minute");
+    }
+
+    const [year, month, day] = multiDayEndDate.split("-").map(Number);
+    if (!year || !month || !day) {
+      return startDate.add(duration || event.length, "minute");
+    }
+
+    const candidate = startDate.set("year", year).set("month", month - 1).set("date", day);
+
+    if (candidate.isBefore(startDate, "minute")) {
+      return startDate.add(duration || event.length, "minute");
+    }
+
+    if (candidate.isSame(startDate, "minute")) {
+      return startDate.add(duration || event.length, "minute");
+    }
+
+    return candidate;
+  };
+
+  const endDate = computeEnd();
+
   return {
     ...values,
     user: username,
-    start: dayjs(date).format(),
-    end: dayjs(date)
-      // Defaults to the default event length in case no custom duration is set.
-      .add(duration || event.length, "minute")
-      .format(),
+    start: startDate.format(),
+    end: endDate.format(),
     eventTypeId: event.id,
     eventTypeSlug: event.slug,
     timeZone: timeZone,

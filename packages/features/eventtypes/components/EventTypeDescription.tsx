@@ -79,6 +79,13 @@ export const EventTypeDescription = ({
               </Badge>
             </li>
           )}
+          {metadata?.multiDayBooking && (
+            <li>
+              <Badge variant="gray" startIcon="calendar-range">
+                {t("multi_day_booking")}
+              </Badge>
+            </li>
+          )}
           {eventType.schedulingType && eventType.schedulingType !== SchedulingType.MANAGED && (
             <li>
               <Badge variant="gray" startIcon="users">

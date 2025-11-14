@@ -372,7 +372,7 @@ const BookerComponent = ({
                 {isPlatform && layout === BookerLayouts.MONTH_VIEW ? (
                   <></>
                 ) : (
-                  <Header
+                  /* <Header
                     isMyLink={Boolean(username === sessionUsername)}
                     eventSlug={eventSlug}
                     enabledLayouts={bookerLayouts.enabledLayouts}
@@ -400,7 +400,8 @@ const BookerComponent = ({
                         </>
                       )
                     }
-                  />
+                  /> */ 
+                  <></>
                 )}
               </BookerSection>
             )}

@@ -95,6 +95,7 @@ export const EventSetupTab = (
   const [defaultDuration, setDefaultDuration] = useState(
     selectedMultipleDuration.find((opt) => opt.value === formMethods.getValues("length")) ?? null
   );
+  const multiDayBookingEnabled = formMethods.watch("metadata.multiDayBooking") ?? false;
 
   const { isChildrenManagedEventType, isManagedEventType, shouldLockIndicator, shouldLockDisableProps } =
     useLockedFieldsManager({ eventType, translate: t, formMethods });
@@ -338,6 +339,27 @@ export const EventSetupTab = (
               />
             </div>
           )}
+          <div className="!mt-4 [&_label]:my-1 [&_label]:font-normal">
+            <SettingsToggle
+              title={t("enable_multi_day_bookings")}
+              description={t("enable_multi_day_bookings_description")}
+              checked={multiDayBookingEnabled}
+              onCheckedChange={(checked) => {
+                const currentMetadata = formMethods.getValues("metadata") ?? {};
+                const nextMetadata = { ...(currentMetadata ?? {}) } as Record<string, unknown>;
+                if (checked) {
+                  nextMetadata.multiDayBooking = true;
+                } else {
+                  delete nextMetadata.multiDayBooking;
+                }
+                if (Object.keys(nextMetadata).length === 0) {
+                  formMethods.setValue("metadata", undefined, { shouldDirty: true });
+                } else {
+                  formMethods.setValue("metadata", nextMetadata, { shouldDirty: true });
+                }
+              }}
+            />
+          </div>
         </div>
         <div
           className={classNames(

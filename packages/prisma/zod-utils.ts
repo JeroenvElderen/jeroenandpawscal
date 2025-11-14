@@ -248,22 +248,11 @@ export type BookerLayoutSettings = z.infer<typeof bookerLayouts>;
 
 export const RequiresConfirmationThresholdUnits: z.ZodType<UnitTypeLongPlural> = z.enum(["hours", "minutes"]);
 
-const additionalInfoSectionItemSchema = z.object({
-  label: z.string(),
-  description: z.string().optional(),
-  icon: z.string().optional(),
-});
-
-const additionalInfoSectionSchema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  items: additionalInfoSectionItemSchema.array().default([]),
-});
-
 const _eventTypeMetaDataSchemaWithoutApps = z.object({
   smartContractAddress: z.string().optional(),
   blockchainId: z.number().optional(),
   multipleDuration: z.number().array().optional(),
+  multiDayBooking: z.boolean().optional(),
   giphyThankYouPage: z.string().optional(),
   additionalNotesRequired: z.boolean().optional(),
   disableSuccessPage: z.boolean().optional(),

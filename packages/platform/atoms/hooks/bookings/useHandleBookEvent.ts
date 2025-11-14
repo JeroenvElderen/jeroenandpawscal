@@ -1,5 +1,6 @@
 import { useSearchParams } from "next/navigation";
 
+import dayjs from "@calcom/dayjs";
 import { useIsPlatform } from "@calcom/atoms/hooks/useIsPlatform";
 import { useBookerStoreContext } from "@calcom/features/bookings/Booker/BookerStoreProvider";
 import { useBookerTime } from "@calcom/features/bookings/Booker/components/hooks/useBookerTime";
@@ -77,6 +78,8 @@ export const useHandleBookEvent = ({
   const verificationCode = useBookerStoreContext((state) => state.verificationCode);
   const extraFeatures = useBookerStoreContext((state) => state.extraFeatures);
   const setExtraFeatures = useBookerStoreContext((state) => state.setExtraFeatures);
+  const selectedEndDate = useBookerStoreContext((state) => state.selectedEndDate);
+  const setSelectedEndDate = useBookerStoreContext((state) => state.setSelectedEndDate);
   const searchParams = useSearchParams();
 
   const handleError = (err: unknown) => {
@@ -140,9 +143,29 @@ export const useHandleBookEvent = ({
       routingFormSearchParams,
       isDryRunProp: isBookingDryRun,
       verificationCode: verificationCode || undefined,
+      multiDayEndDate: selectedEndDate || undefined,
     };
 
     const tracking = getUtmTrackingParameters(searchParams);
+
+    if (event.data.metadata?.multiDayBooking) {
+      if (!selectedEndDate) {
+        bookingForm.setError("globalError", { message: t("start_date_and_end_date_required") });
+        return;
+      }
+
+      const startDate = dayjs(timeslot);
+      const endCandidate = (() => {
+        const [year, month, day] = selectedEndDate.split("-").map(Number);
+        if (!year || !month || !day) return null;
+        return startDate.set("year", year).set("month", month - 1).set("date", day);
+      })();
+
+      if (!endCandidate || endCandidate.isBefore(startDate, "minute")) {
+        bookingForm.setError("globalError", { message: t("start_date_must_be_before_end_date") });
+        return;
+      }
+    }
 
     if (isInstantMeeting) {
       handleInstantBooking(mapBookingToMutationInput(bookingInput), callbacks);
@@ -162,6 +185,7 @@ export const useHandleBookEvent = ({
     setFormValues({});
     bookingForm.clearErrors();
     setExtraFeatures([]);
+    setSelectedEndDate(null);
   };
 
   return handleBookEvent;

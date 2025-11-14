@@ -13,6 +13,7 @@ import { Editor } from "@calcom/ui/components/editor";
 import { Form } from "@calcom/ui/components/form";
 import { TextAreaField } from "@calcom/ui/components/form";
 import { TextField } from "@calcom/ui/components/form";
+import { SettingsToggle } from "@calcom/ui/components/form";
 import { Tooltip } from "@calcom/ui/components/tooltip";
 
 export default function CreateEventTypeForm({
@@ -37,6 +38,24 @@ export default function CreateEventTypeForm({
   const [firstRender, setFirstRender] = useState(true);
 
   const { register } = form;
+  const multiDayBookingEnabled = form.watch("metadata.multiDayBooking") ?? false;
+
+  const updateMultiDayBooking = (enabled: boolean) => {
+    const currentMetadata = form.getValues("metadata") ?? {};
+    const nextMetadata = { ...(currentMetadata ?? {}) } as Record<string, unknown>;
+
+    if (enabled) {
+      nextMetadata.multiDayBooking = true;
+    } else {
+      delete nextMetadata.multiDayBooking;
+    }
+
+    if (Object.keys(nextMetadata).length === 0) {
+      form.setValue("metadata", undefined, { shouldDirty: true });
+    } else {
+      form.setValue("metadata", nextMetadata, { shouldDirty: true });
+    }
+  };
   return (
     <Form
       form={form}
@@ -145,6 +164,14 @@ export default function CreateEventTypeForm({
                 },
               })}
               addOnSuffix={t("minutes").toLowerCase()}
+            />
+          </div>
+          <div>
+            <SettingsToggle
+              title={t("enable_multi_day_bookings")}
+              description={t("enable_multi_day_bookings_description")}
+              checked={multiDayBookingEnabled}
+              onCheckedChange={(checked) => updateMultiDayBooking(checked)}
             />
           </div>
         </>
