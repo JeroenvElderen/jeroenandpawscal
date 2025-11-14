@@ -3,6 +3,7 @@ import { v5 as uuidv5 } from "uuid";
 
 import processExternalId from "@calcom/app-store/_utils/calendars/processExternalId";
 import { getPaymentAppData } from "@calcom/app-store/_utils/payments/getPaymentAppData";
+import { sendBookerPasswordSetupEmail } from "@calcom/emails/auth-email-service";
 import {
   enrichHostsWithDelegationCredentials,
   getFirstDelegationConferencingCredentialAppLocation,
@@ -22,6 +23,7 @@ import dayjs from "@calcom/dayjs";
 import { scheduleMandatoryReminder } from "@calcom/ee/workflows/lib/reminders/scheduleMandatoryReminder";
 import getICalUID from "@calcom/emails/lib/getICalUID";
 import { CalendarEventBuilder } from "@calcom/features/CalendarEventBuilder";
+import { createPasswordResetLink } from "@calcom/features/auth/lib/passwordResetRequest";
 import EventManager, { placeholderCreatedEvent } from "@calcom/features/bookings/lib/EventManager";
 import type { BookingDataSchemaGetter } from "@calcom/features/bookings/lib/dto/types";
 import type {
@@ -59,7 +61,7 @@ import type { EventPayloadType, EventTypeInfo } from "@calcom/features/webhooks/
 import { getVideoCallUrlFromCalEvent } from "@calcom/lib/CalEventParser";
 import { groupHostsByGroupId } from "@calcom/lib/bookings/hostGroupUtils";
 import { shouldIgnoreContactOwner } from "@calcom/lib/bookings/routing/utils";
-import { DEFAULT_GROUP_ID } from "@calcom/lib/constants";
+import { APP_NAME, DEFAULT_GROUP_ID } from "@calcom/lib/constants";
 import { ErrorCode } from "@calcom/lib/errorCodes";
 import { getErrorFromUnknown, ErrorWithCode } from "@calcom/lib/errors";
 import { extractBaseEmail } from "@calcom/lib/extract-base-email";
@@ -71,6 +73,7 @@ import { criticalLogger } from "@calcom/lib/logger.server";
 import { getPiiFreeCalendarEvent, getPiiFreeEventType } from "@calcom/lib/piiFreeData";
 import { safeStringify } from "@calcom/lib/safeStringify";
 import { getTranslation } from "@calcom/lib/server/i18n";
+import slugify from "@calcom/lib/slugify";
 import { getTimeFormatStringFromUserTimeFormat } from "@calcom/lib/timeFormat";
 import type { PrismaClient } from "@calcom/prisma";
 import type { DestinationCalendar, Prisma, User, AssignmentReasonEnum } from "@calcom/prisma/client";
@@ -92,6 +95,10 @@ import type {
 } from "@calcom/types/Calendar";
 import type { CredentialForCalendarService } from "@calcom/types/Credential";
 import type { EventResult, PartialReference } from "@calcom/types/EventManager";
+import type { Logger } from "tslog";
+
+import { sentrySpan } from "@calcom/features/watchlist/lib/telemetry";
+import { checkIfEmailIsBlockedInWatchlistController } from "@calcom/features/watchlist/operations/check-if-email-in-watchlist.controller";
 
 import type { BookingRepository } from "../../repositories/BookingRepository";
 import { BookingActionMap, BookingEmailSmsHandler } from "../BookingEmailSmsHandler";
@@ -460,6 +467,188 @@ async function getEventOrganizationId({
   return eventOrganizationId;
 }
 
+type UsernameLookupResult = {
+  username: string;
+  base: string;
+};
+
+async function findAvailableUsername({
+  email,
+  fallbackName,
+  prismaClient,
+}: {
+  email: string;
+  fallbackName?: string;
+  prismaClient: PrismaClient;
+}): Promise<UsernameLookupResult> {
+  const [localPart] = email.split("@");
+  const derivedBase = slugify(localPart || fallbackName || "guest");
+  const base = derivedBase || `user-${uuid().slice(0, 6)}`;
+  let candidate = base;
+  let attempts = 0;
+
+  while (attempts < 5) {
+    const existingUser = await prismaClient.user.findUnique({
+      where: { username: candidate },
+      select: { id: true },
+    });
+
+    if (!existingUser) {
+      return { username: candidate, base };
+    }
+
+    candidate = `${base}-${Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, "0")}`;
+    attempts++;
+  }
+
+  return { username: `${base}-${uuid().slice(0, 6)}`, base };
+}
+
+async function sendPasswordSetupEmail({
+  normalizedEmail,
+  displayEmail,
+  name,
+  locale,
+  brandName,
+  logger,
+}: {
+  normalizedEmail: string;
+  displayEmail: string;
+  name?: string | null;
+  locale?: string | null;
+  brandName: string;
+  logger: Logger<unknown>;
+}) {
+  try {
+    const translation = await getTranslation(locale ?? "en", "common");
+    const resetLink = await createPasswordResetLink(normalizedEmail);
+    await sendBookerPasswordSetupEmail({
+      language: translation,
+      user: { name: name ?? null, email: displayEmail },
+      resetLink,
+      brandName,
+    });
+  } catch (error) {
+    const err = getErrorFromUnknown(error);
+    logger.warn(
+      "Failed to send password setup email to booker",
+      safeStringify({ email: normalizedEmail, message: err.message })
+    );
+  }
+}
+
+async function ensureBookerProfileAndNotify({
+  bookerEmail,
+  fullName,
+  attendeeLanguage,
+  attendeeTimezone,
+  eventOrganizationId,
+  deps,
+  sendEmail,
+  brandName,
+  logger,
+}: {
+  bookerEmail: string;
+  fullName: string;
+  attendeeLanguage?: string | null;
+  attendeeTimezone?: string | null;
+  eventOrganizationId: number | null;
+  deps: IBookingServiceDependencies;
+  sendEmail: boolean;
+  brandName: string;
+  logger: Logger<unknown>;
+}) {
+  const normalizedEmail = bookerEmail.trim().toLowerCase();
+
+  if (!normalizedEmail) {
+    return;
+  }
+
+  const existingUser = await deps.prismaClient.user.findUnique({
+    where: { email: normalizedEmail },
+    select: {
+      id: true,
+      password: { select: { id: true } },
+    },
+  });
+
+  if (existingUser) {
+    if (!existingUser.password && sendEmail) {
+      await sendPasswordSetupEmail({
+        normalizedEmail,
+        displayEmail: bookerEmail,
+        name: fullName || null,
+        locale: attendeeLanguage,
+        brandName,
+        logger,
+      });
+    }
+    return;
+  }
+
+  let shouldLockByDefault = false;
+
+  try {
+    shouldLockByDefault = await checkIfEmailIsBlockedInWatchlistController({
+      email: normalizedEmail,
+      organizationId: eventOrganizationId ?? undefined,
+      span: sentrySpan,
+    });
+  } catch (error) {
+    const err = getErrorFromUnknown(error);
+    logger.warn(
+      "Failed to determine if booker should be locked by default",
+      safeStringify({ email: normalizedEmail, message: err.message })
+    );
+  }
+
+  const { username: initialUsername, base } = await findAvailableUsername({
+    email: normalizedEmail,
+    fallbackName: fullName,
+    prismaClient: deps.prismaClient,
+  });
+
+  let username = initialUsername;
+  const maxAttempts = 3;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      await deps.userRepository.create({
+        email: normalizedEmail,
+        username,
+        name: fullName || null,
+        locale: attendeeLanguage ?? "en",
+        ...(attendeeTimezone ? { timeZone: attendeeTimezone } : {}),
+        creationSource: CreationSource.WEBAPP,
+        organizationId: eventOrganizationId ?? null,
+        locked: shouldLockByDefault,
+      });
+
+      if (sendEmail) {
+        await sendPasswordSetupEmail({
+          normalizedEmail,
+          displayEmail: bookerEmail,
+          name: fullName || null,
+          locale: attendeeLanguage,
+          brandName,
+          logger,
+        });
+      }
+      return;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002" && attempt < maxAttempts - 1) {
+        username = `${base}-${uuid().slice(0, 6)}`;
+        continue;
+      }
+
+      throw error;
+    }
+  }
+}
+
+
 async function handler(
   input: BookingHandlerInput,
   deps: IBookingServiceDependencies,
@@ -712,6 +901,7 @@ async function handler(
     reqBodyEnd: reqBody.end,
     eventTypeMultipleDuration: eventType.metadata?.multipleDuration,
     eventTypeLength: eventType.length,
+    isMultiDayBookingEnabled: eventType.metadata?.multiDayBooking,
     logger: loggerWithEventDetails,
   });
 
@@ -1281,9 +1471,17 @@ async function handler(
     where: {
       userId: organizerUser.id,
     },
+    include: {
+      organization: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
 
   const organizerOrganizationId = organizerOrganizationProfile?.organizationId;
+  const organizerBrandName = organizerOrganizationProfile?.organization?.name ?? APP_NAME;
   const bookerUrl = eventType.team
     ? await getBookerBaseUrl(eventType.team.parentId)
     : await getBookerBaseUrl(organizerOrganizationId ?? null);
@@ -1802,6 +2000,28 @@ async function handler(
           },
         });
         evt.attendeeSeatId = uniqueAttendeeId;
+      }
+      
+      if (booking && !rawBookingData.rescheduleUid) {
+        try {
+          await ensureBookerProfileAndNotify({
+            bookerEmail,
+            fullName,
+            attendeeLanguage,
+            attendeeTimezone,
+            eventOrganizationId,
+            deps,
+            sendEmail: !noEmail,
+            brandName: organizerBrandName,
+            logger: loggerWithEventDetails,
+          });
+        } catch (error) {
+          const err = getErrorFromUnknown(error);
+          loggerWithEventDetails.warn(
+            "Failed to prepare booker profile after booking",
+            safeStringify({ email: bookerEmail, message: err.message })
+          );
+        }
       }
     } else {
       const { booking: dryRunBooking, troubleshooterData: _troubleshooterData } = buildDryRunBooking({

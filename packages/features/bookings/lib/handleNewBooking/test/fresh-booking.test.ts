@@ -1553,6 +1553,72 @@ describe("handleNewBooking", () => {
         },
         timeout
       );
+      
+      test(
+        `should allow bookings longer than the default length when multi day bookings are enabled`,
+        async () => {
+          const handleNewBooking = getNewBookingHandler();
+
+          const booker = getBooker({
+            email: "booker@example.com",
+            name: "Booker",
+          });
+
+          const organizer = getOrganizer({
+            name: "Organizer",
+            email: "organizer@example.com",
+            id: 101,
+            schedules: [TestData.schedules.IstWorkHours],
+          });
+
+          await createBookingScenario(
+            getScenarioData({
+              eventTypes: [
+                {
+                  id: 1,
+                  slotInterval: 1440,
+                  length: 1440,
+                  metadata: { multiDayBooking: true },
+                  users: [
+                    {
+                      id: 101,
+                    },
+                  ],
+                },
+              ],
+              organizer,
+            })
+          );
+
+          const startDateString = getDate({ dateIncrement: 1 }).dateString;
+          const endDateString = getDate({ dateIncrement: 3 }).dateString;
+
+          const mockedBookingData = getMockRequestDataForBooking({
+            data: {
+              start: `${startDateString}T05:00:00.000Z`,
+              end: `${endDateString}T05:00:00.000Z`,
+              eventTypeId: 1,
+              responses: {
+                email: booker.email,
+                name: booker.name,
+                location: { optionValue: "", value: "New York" },
+              },
+            },
+          });
+
+          const createdBooking = await handleNewBooking({
+            bookingData: mockedBookingData,
+          });
+
+          expect(createdBooking).toEqual(
+            expect.objectContaining({
+              startTime: `${startDateString}T05:00:00.000Z`,
+              endTime: `${endDateString}T05:00:00.000Z`,
+            })
+          );
+        },
+        timeout
+      );
     });
 
     describe("UTM tracking tests", () => {

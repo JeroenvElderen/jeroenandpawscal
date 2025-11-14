@@ -2,6 +2,8 @@ import type BaseEmail from "@calcom/emails/templates/_base-email";
 
 import type { PasswordReset } from "./templates/forgot-password-email";
 import ForgotPasswordEmail from "./templates/forgot-password-email";
+import type { BookerPasswordSetup } from "./templates/BookerPasswordSetupEmail";
+import BookerPasswordSetupEmail from "./templates/BookerPasswordSetupEmail";
 import type { EmailVerifyLink } from "./templates/account-verify-email";
 import AccountVerifyEmail from "./templates/account-verify-email";
 import type { EmailVerifyCode } from "./templates/attendee-verify-email";
@@ -22,6 +24,10 @@ const sendEmail = (prepare: () => BaseEmail) => {
 
 export const sendPasswordResetEmail = async (passwordResetEvent: PasswordReset) => {
   await sendEmail(() => new ForgotPasswordEmail(passwordResetEvent));
+};
+
+export const sendBookerPasswordSetupEmail = async (passwordSetupEvent: BookerPasswordSetup) => {
+  await sendEmail(() => new BookerPasswordSetupEmail(passwordSetupEvent));
 };
 
 export const sendEmailVerificationLink = async (verificationInput: EmailVerifyLink) => {

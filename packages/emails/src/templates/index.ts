@@ -8,6 +8,7 @@ export { AttendeeWasRequestedToRescheduleEmail } from "./AttendeeWasRequestedToR
 export { AttendeeRescheduledEmail } from "./AttendeeRescheduledEmail";
 export { AttendeeUpdatedEmail } from "./AttendeeUpdatedEmail";
 export { AttendeeScheduledEmail } from "./AttendeeScheduledEmail";
+export { default as BookerPasswordSetupEmail } from "../../templates/BookerPasswordSetupEmail";
 export { DisabledAppEmail } from "./DisabledAppEmail";
 export { SlugReplacementEmail } from "./SlugReplacementEmail";
 export { FeedbackEmail } from "./FeedbackEmail";
