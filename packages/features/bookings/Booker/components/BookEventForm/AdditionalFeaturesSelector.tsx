@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { useBookerStoreContext } from "@calcom/features/bookings/Booker/BookerStoreProvider";
+import { EXTRA_FEATURE_OPTIONS } from "@calcom/features/bookings/lib/extraFeatures";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Button } from "@calcom/ui/components/button";
 import {
@@ -10,24 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@calcom/ui/components/dropdown";
 
-const FEATURE_OPTIONS = [
-  {
-    value: "pickup",
-    translationKey: "feature_pickup_service",
-    defaultLabel: "Pickup service",
-  },
-  {
-    value: "dropoff",
-    translationKey: "feature_dropoff_service",
-    defaultLabel: "Drop-off service",
-  },
-  {
-    value: "equipment",
-    translationKey: "feature_equipment_setup",
-    defaultLabel: "Equipment setup",
-  },
-];
-
 export const AdditionalFeaturesSelector = () => {
   const { t } = useLocale();
   const extraFeatures = useBookerStoreContext((state) => state.extraFeatures);
@@ -35,7 +18,7 @@ export const AdditionalFeaturesSelector = () => {
 
   const featureOptions = useMemo(
     () =>
-      FEATURE_OPTIONS.map((option) => ({
+      EXTRA_FEATURE_OPTIONS.map((option) => ({
         ...option,
         label: t(option.translationKey, { defaultValue: option.defaultLabel }),
       })),

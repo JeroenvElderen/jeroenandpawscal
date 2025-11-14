@@ -14234,10 +14234,6 @@ hr {}
   -webkit-app-region: no-drag;
 }
 
-.\[a-zA-Z\:_\] {
-  a-z-a--z: ;
-}
-
 .\[appearance\:textfield\] {
   -webkit-appearance: textfield;
   -moz-appearance: textfield;

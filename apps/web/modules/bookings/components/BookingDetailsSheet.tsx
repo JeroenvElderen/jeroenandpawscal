@@ -5,6 +5,10 @@ import { z } from "zod";
 
 import dayjs from "@calcom/dayjs";
 import { useBookingLocation } from "@calcom/features/bookings/hooks";
+import {
+  getExtraFeatureLabels,
+  parseExtraFeaturesFromMetadata,
+} from "@calcom/features/bookings/lib/extraFeatures";
 import { shouldShowFieldInCustomResponses } from "@calcom/lib/bookings/SystemField";
 import { formatPrice } from "@calcom/lib/currencyConversions";
 import { getPlaceholderAvatar } from "@calcom/lib/defaultAvatarImage";
@@ -108,6 +112,16 @@ function BookingDetailsSheetInner({
   const parsedMetadata = bookingMetadataSchema.safeParse(booking.metadata ?? null);
   const bookingMetadata = parsedMetadata.success ? parsedMetadata.data : null;
 
+  const extraFeatures = useMemo(
+    () => parseExtraFeaturesFromMetadata(bookingMetadata?.extraFeatures),
+    [bookingMetadata?.extraFeatures]
+  );
+
+  const localizedExtraFeatures = useMemo(
+    () => getExtraFeatureLabels(extraFeatures, t),
+    [extraFeatures, t]
+  );
+
   // Get conference link info for Join button
   const { locationToDisplay, provider, isLocationURL } = useBookingLocation({
     location: booking.location,
@@ -192,6 +206,20 @@ function BookingDetailsSheetInner({
             <PaymentSection booking={booking} />
 
             <SlotsSection booking={booking} />
+            
+            {localizedExtraFeatures.length > 0 && (
+              <Section
+                title={t("additional_features", { defaultValue: "Additional features" })}
+                className="space-y-2">
+                <ul className="list-disc space-y-1 pl-4">
+                  {localizedExtraFeatures.map((feature, index) => (
+                    <li key={`${feature}-${index}`} className="text-default text-sm">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </Section>
+            )}
 
             <CustomQuestionsSection
               customResponses={customResponses}

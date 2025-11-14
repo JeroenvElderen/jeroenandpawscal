@@ -67,7 +67,7 @@ export function Header({
   // In month view we only show the layout toggle.
   if (isMonthView) {
     return (
-      <div className="flex gap-2">
+      <div className="flex gap-2 relative">
         {isMyLink && !isEmbed ? (
           <Tooltip content={t("troubleshooter_tooltip")} side="bottom">
             <Button

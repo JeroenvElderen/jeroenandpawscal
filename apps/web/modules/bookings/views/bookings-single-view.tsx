@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Toaster } from "sonner";
 import { z } from "zod";
 
@@ -22,6 +22,10 @@ import {
   useIsEmbed,
 } from "@calcom/embed-core/embed-iframe";
 import { Price } from "@calcom/features/bookings/components/event-meta/Price";
+import {
+  getExtraFeatureLabels,
+  parseExtraFeaturesFromMetadata,
+} from "@calcom/features/bookings/lib/extraFeatures";
 import { getCalendarLinks, CalendarLinkType } from "@calcom/features/bookings/lib/getCalendarLinks";
 import { RATING_OPTIONS, validateRating } from "@calcom/features/bookings/lib/rating";
 import type { nameObjectSchema } from "@calcom/features/eventtypes/lib/eventNaming";
@@ -136,6 +140,16 @@ export default function Success(props: PageProps) {
 
   const parsed = bookingMetadataSchema.safeParse(bookingInfo?.metadata ?? null);
   const parsedBookingMetadata = parsed.success ? parsed.data : null;
+
+  const extraFeatures = useMemo(
+    () => parseExtraFeaturesFromMetadata(parsedBookingMetadata?.extraFeatures),
+    [parsedBookingMetadata?.extraFeatures]
+  );
+
+  const localizedExtraFeatures = useMemo(
+    () => getExtraFeatureLabels(extraFeatures, t),
+    [extraFeatures, t]
+  );
 
   const bookingWithParsedMetadata = {
     ...bookingInfo,
@@ -715,6 +729,20 @@ export default function Success(props: PageProps) {
 
                         {rescheduledToUid ? <RescheduledToLink rescheduledToUid={rescheduledToUid} /> : null}
 
+                        {localizedExtraFeatures.length > 0 && (
+                          <>
+                            <div className="mt-9 font-medium">
+                              {t("additional_features", { defaultValue: "Additional features" })}
+                            </div>
+                            <div className="col-span-2 mb-2 mt-9">
+                              <ul className="list-disc space-y-1 pl-5 text-sm text-subtle">
+                                {localizedExtraFeatures.map((feature, index) => (
+                                  <li key={`${feature}-${index}`}>{feature}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </>
+                        )}
                         {bookingInfo?.description && (
                           <>
                             <div className="mt-9 font-medium">{t("additional_notes")}</div>
