@@ -67,6 +67,8 @@ const _ensureAvailableUsers = async (
 
   const startDateTimeUtc = getDateTimeInUtc(input.dateFrom, input.timeZone);
   const endDateTimeUtc = getDateTimeInUtc(input.dateTo, input.timeZone);
+  const shouldRelaxDateRangeCheck = Boolean(eventType.metadata?.multiDayBooking);
+  const endDateTimeForAvailabilityChecks = shouldRelaxDateRangeCheck ? startDateTimeUtc : endDateTimeUtc;
 
   const duration = dayjs(input.dateTo).diff(input.dateFrom, "minute");
   const originalBookingDuration = getOriginalBookingDuration(input.originalRescheduledBooking);
@@ -202,7 +204,7 @@ const _ensureAvailableUsers = async (
         travelSchedules,
       });
 
-      if (!hasDateRangeForBooking(restrictionRanges, startDateTimeUtc, endDateTimeUtc)) {
+      if (!hasDateRangeForBooking(restrictionRanges, startDateTimeUtc, endDateTimeForAvailabilityChecks)) {
         loggerWithEventDetails.error(
           `Booking outside restriction schedule availability.`,
           piiFreeInputDataForLogging
@@ -233,7 +235,7 @@ const _ensureAvailableUsers = async (
     }
 
     //check if event time is within the date range
-    if (!hasDateRangeForBooking(dateRanges, startDateTimeUtc, endDateTimeUtc)) {
+    if (!hasDateRangeForBooking(dateRanges, startDateTimeUtc, endDateTimeForAvailabilityChecks)) {
       loggerWithEventDetails.error(`No date range for booking.`, piiFreeInputDataForLogging);
       return;
     }
