@@ -216,7 +216,7 @@ const _ensureAvailableUsers = async (
   }
 
   usersAvailability.forEach((userAvailability, index) => {
-    const { oooExcludedDateRanges: dateRanges, busy: bufferedBusyTimes } = userAvailability;
+    const { oooExcludedDateRanges: dateRanges, busy: bufferedBusyTimes, currentSeats } = userAvailability;
     const user = eventType.users[index];
 
     loggerWithEventDetails.debug(
@@ -243,6 +243,7 @@ const _ensureAvailableUsers = async (
         busy: bufferedBusyTimes,
         time: startDateTimeUtc,
         eventLength: duration,
+        currentSeats: currentSeats ?? undefined,
       });
       if (!foundConflict) {
         availableUsers.push({ ...user, availabilityData: userAvailability });
